@@ -15,7 +15,7 @@ import com.msb.mall.coupon.service.CouponService;
 
 @Service("couponService")
 public class CouponServiceImpl extends ServiceImpl<CouponDao, CouponEntity> implements CouponService {
-
+1
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<CouponEntity> page = this.page(
