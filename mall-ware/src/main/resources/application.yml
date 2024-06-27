@@ -3,12 +3,12 @@ spring:
   datasource:
     username: root
     password: root
-    url: jdbc:mysql://192.168.56.100:3306/mall-wms
+    url: jdbc:mysql://192.168.30.128:3308/mall-wms
     driver-class-name: com.mysql.cj.jdbc.Driver
   cloud:
     nacos:
       discovery:
-        server-addr: 192.168.56.100:8848
+        server-addr: 192.168.30.128:8848
     #alibaba:
      # seata:
       #  tx-service-group: mall-ware-group

@@ -3,12 +3,12 @@ spring:
   datasource:
     username: root
     password: root
-    url: jdbc:mysql://192.168.56.100:3306/mall-pms
+    url: jdbc:mysql://192.168.30.128:3308/mall-pms
     driver-class-name: com.mysql.cj.jdbc.Driver
   cloud:
     nacos:
       discovery:
-        server-addr: 192.168.56.100:8848
+        server-addr: 192.168.30.128:8848
     alicloud:
       access-key:
       secret-key:
@@ -27,8 +27,9 @@ spring:
   thymeleaf:
     cache: false # 关闭Thymeleaf的缓存
   redis:
-    host: 192.168.56.100
-    port: 6379
+    host: 192.168.30.128
+    port: 6380
+    password: 1qaz@WSX
   cache:
     type: redis # SpringCache 缓存的类型是 Redis
     redis:
