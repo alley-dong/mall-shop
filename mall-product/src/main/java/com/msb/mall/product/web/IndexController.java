@@ -37,7 +37,7 @@ public class IndexController {
     public String index(Model model){
 
         // 查询出所有的一级分类的信息
-        List<CategoryEntity> list = categoryService.getLeve1Category();
+        List<CategoryEntity> list = categoryService.getLeve1Category(12350876L);
         model.addAttribute("categorys",list);
         // classPath:/templates/
         // .html
@@ -51,6 +51,14 @@ public class IndexController {
     public Map<String, List<Catalog2VO>> getCatalog2JSON(){
         Map<String, List<Catalog2VO>> map = categoryService.getCatelog2JSON();
         return map;
+    }
+
+    // index/catalog.json
+    @Trace
+    @ResponseBody
+    @RequestMapping("/update/index")
+    public void update(){
+        categoryService.updateCatetory(12350876L);
     }
 
     /**

@@ -8,9 +8,11 @@ import org.apache.skywalking.apm.toolkit.trace.Tag;
 import org.apache.skywalking.apm.toolkit.trace.Tags;
 import org.apache.skywalking.apm.toolkit.trace.Trace;
 import org.redisson.api.RLock;
+import org.redisson.api.RSemaphore;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -144,9 +146,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      * @return
      */
     @Trace
-    @Cacheable(value = {"catagory"},key = "#root.method.name",sync = true)
+    @Cacheable(value = {"catagory"},key = "'category'+'[' + #categoryId + ']'",sync = true)
     @Override
-    public List<CategoryEntity> getLeve1Category() {
+    public List<CategoryEntity> getLeve1Category(Long categoryId) {
         System.out.println("查询了数据库操作....");
         long start = System.currentTimeMillis();
         List<CategoryEntity> list = baseMapper.queryLeve1Category();
@@ -291,6 +293,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
 
     /**
+     * 解决雪崩、穿透、击穿
      * 从数据库中查询操作
      * @param keys
      * @return
@@ -298,6 +301,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     private Map<String, List<Catalog2VO>> getDataForDB(String keys) {
         // 从Redis中获取分类的信息
         String catalogJSON = stringRedisTemplate.opsForValue().get(keys);
+        if ("NOT_FOUND".equals(catalogJSON)){
+            return null;
+        }
         if(!StringUtils.isEmpty(catalogJSON)){
             // 说明缓存命中
 
@@ -346,7 +352,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         // 表示缓存命中了数据，那么从缓存中获取信息，然后返回
         if(map == null){
             // 那就说明数据库中也不存在  防止缓存穿透
-            stringRedisTemplate.opsForValue().set(keys,"1",5, TimeUnit.SECONDS);
+            stringRedisTemplate.opsForValue().set(keys,"NOT_FOUND",5, TimeUnit.SECONDS);
         }else{
             // 从数据库中查询到的数据，我们需要给缓存中也存储一份
             // 防止缓存雪崩
@@ -357,6 +363,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     }
 
     /**
+     * 本地锁
+     *
      * 从数据库查询的结果
      * 查询出所有的二级和三级分类的数据
      * 并封装为Map<String, Catalog2VO>对象
@@ -420,7 +428,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                 // 从数据库中查询到的数据，我们需要给缓存中也存储一份
                 // 防止缓存雪崩
                 String json = JSON.toJSONString(map);
-                stringRedisTemplate.opsForValue().set("catalogJSON",json,100,TimeUnit.MINUTES);
+                    stringRedisTemplate.opsForValue().set("catalogJSON",json,100,TimeUnit.MINUTES);
             }
             return map;
         } }
