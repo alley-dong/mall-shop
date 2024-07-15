@@ -124,8 +124,6 @@ public class SeckillServiceImpl implements SeckillService {
             log.error("getCurrentSeckillSkusResources被限制访问了...");
             // 在此处进行相应的处理操作
         }
-
-
         return null;
     }
 

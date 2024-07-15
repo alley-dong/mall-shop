@@ -3,7 +3,7 @@ package com.msb.mall.mallsearch.thread;
 import java.util.concurrent.*;
 
 /**
- * CompletableFuture的介绍
+ * 创建异步对象
  */
 public class CompletableFutureDemo {
 
@@ -18,6 +18,9 @@ public class CompletableFutureDemo {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
 
+        /**
+         * runAsync 没有返回结果
+         */
         System.out.println("main -- 线程开始了...");
         // 获取CompletableFuture对象
         CompletableFuture<Void> voidCompletableFuture = CompletableFuture.runAsync(() -> {
@@ -27,6 +30,9 @@ public class CompletableFutureDemo {
         },executor);
         System.out.println("main -- 线程结束了...");
 
+        /**
+         * supplyAsync 有返回结果
+         */
         System.out.println("------------");
         CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
             System.out.println("线程开始了...");

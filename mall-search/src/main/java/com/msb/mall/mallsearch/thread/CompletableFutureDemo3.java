@@ -3,7 +3,7 @@ package com.msb.mall.mallsearch.thread;
 import java.util.concurrent.*;
 
 /**
- * CompletableFuture的介绍
+ * 线程串行的方法
  */
 public class CompletableFutureDemo3 {
 
@@ -25,7 +25,7 @@ public class CompletableFutureDemo3 {
      * @throws ExecutionException
      * @throws InterruptedException
      */
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
+    /*public static void main(String[] args) throws ExecutionException, InterruptedException {
 
         CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
             System.out.println("线程开始了..." + Thread.currentThread().getName());
@@ -38,7 +38,7 @@ public class CompletableFutureDemo3 {
         });
         // 可以处理异步任务之后的操作
         System.out.println("获取的线程的返回结果是：" + future.get() );
-    }
+    }*/
     /*public static void main(String[] args) throws ExecutionException, InterruptedException {
 
         CompletableFuture<Void> voidCompletableFuture = CompletableFuture.supplyAsync(() -> {
@@ -52,7 +52,7 @@ public class CompletableFutureDemo3 {
         // 可以处理异步任务之后的操作
         //System.out.println("获取的线程的返回结果是：" + future.get() );
     }*/
-    /*public static void main(String[] args) throws ExecutionException, InterruptedException {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
 
         CompletableFuture<Void> voidCompletableFuture = CompletableFuture.supplyAsync(() -> {
             System.out.println("线程开始了..."+Thread.currentThread().getName());
@@ -66,6 +66,6 @@ public class CompletableFutureDemo3 {
         }, executor);
         // 可以处理异步任务之后的操作
         //System.out.println("获取的线程的返回结果是：" + future.get() );
-    }*/
+    }
 
 }

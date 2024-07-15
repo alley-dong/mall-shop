@@ -3,7 +3,7 @@ package com.msb.mall.mallsearch.thread;
 import java.util.concurrent.*;
 
 /**
- * CompletableFuture的介绍
+ * 多任务组合
  */
 public class CompletableFutureDemo6 {
 

@@ -26,10 +26,7 @@ public class SeckillSkuSchedule {
     @Autowired
     RedissonClient redissonClient;
 
-    /**
-     *
-     */
-    
+
     @Async
     @Scheduled(cron = "*/5 * * * * *")
     public void uploadSeckillSku3Days(){
@@ -40,11 +37,8 @@ public class SeckillSkuSchedule {
         try {
             // 调用上架商品的方法
             seckillService.uploadSeckillSku3Days();
-        }catch (Exception e){
-
         }finally {
             lock.unlock();
         }
     }
-
 }

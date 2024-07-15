@@ -53,13 +53,6 @@ public class IndexController {
         return map;
     }
 
-    // index/catalog.json
-    @Trace
-    @ResponseBody
-    @RequestMapping("/update/index")
-    public void update(){
-        categoryService.updateCatetory(12350876L);
-    }
 
     /**
      * 1.锁会自动续期，如果业务时间超长，运行期间Redisson会自动给锁重新添加30s，不用担心业务时间，锁自动过去而造成的数据安全问题
