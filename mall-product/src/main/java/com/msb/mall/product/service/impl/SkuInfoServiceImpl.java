@@ -147,7 +147,7 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
     public SpuItemVO item(Long skuId) throws ExecutionException, InterruptedException {
         SpuItemVO vo = new SpuItemVO();
         CompletableFuture<SkuInfoEntity> skuInfoFuture = CompletableFuture.supplyAsync(() -> {
-            // 1.sku的基本信息 pms_sku_info
+            // sku的基本信息 pms_sku_info
             SkuInfoEntity skuInfoEntity = getById(skuId);
             vo.setInfo(skuInfoEntity);
 
@@ -155,28 +155,28 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
         }, threadPoolExecutor);
 
         CompletableFuture<Void> saleFuture = skuInfoFuture.thenAcceptAsync((res) -> {
-            // 3.获取spu中的销售属性的组合
+            // 获取spu中的销售属性的组合
             List<SkuItemSaleAttrVo> saleAttrs = skuSaleAttrValueService
                     .getSkuSaleAttrValueBySpuId(res.getSpuId());
             vo.setSaleAttrs(saleAttrs);
         }, threadPoolExecutor);
 
         CompletableFuture<Void> spuFuture = skuInfoFuture.thenAcceptAsync((res) -> {
-            // 4.获取SPU的介绍
+            // 获取SPU的介绍
             SpuInfoDescEntity spuInfoDescEntity = spuInfoDescService.getById(res.getSpuId());
             vo.setDesc(spuInfoDescEntity);
         }, threadPoolExecutor);
 
 
         CompletableFuture<Void> groupFuture = skuInfoFuture.thenAcceptAsync((res) -> {
-            // 5.获取SPU的规格参数
+            // 获取SPU的规格参数
             List<SpuItemGroupAttrVo> groupAttrVo = attrGroupService
                     .getAttrgroupWithSpuId(res.getSpuId(), res.getCatalogId());
             vo.setBaseAttrs(groupAttrVo);
         }, threadPoolExecutor);
 
         CompletableFuture<Void> imageFuture = CompletableFuture.runAsync(() -> {
-            // 2.sku的图片信息pms_sku_images
+            // sku的图片信息pms_sku_images
             List<SkuImagesEntity> images = skuImagesService.getImagesBySkuId(skuId);
             vo.setImages(images);
         }, threadPoolExecutor);

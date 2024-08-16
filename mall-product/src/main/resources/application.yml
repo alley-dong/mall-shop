@@ -16,8 +16,8 @@ spring:
         endpoint: oss-cn-guangzhou.aliyuncs.com
     sentinel:
       transport:
-        client-ip: localhost
-        dashboard: localhost:8080
+        client-ip: 192.168.30.128
+        dashboard: 192.168.30.128:8080
         port: 8719
   application:
     name: mall-product

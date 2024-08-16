@@ -70,9 +70,17 @@ public class SeckillServiceImpl implements SeckillService {
             List<SeckillSessionEntity> seckillSessionEntities = JSON.parseArray(json,SeckillSessionEntity.class);
             // 2. 上架商品  Redis数据保存
             // 缓存商品
-            //  2.1 缓存每日秒杀的SKU基本信息
+            /**
+             * 2.1 缓存每日秒杀的SKU基本信息
+             * 通过redis存储list类型的数据，key为场次startTime_entTime, value为 [场次ID1_SkuId1, 场次ID1_场次ID2]
+             */
             saveSessionInfos(seckillSessionEntities);
-            // 2.2  缓存每日秒杀的商品信息
+            /**
+             * 2.2  缓存每日秒杀的商品信息
+             * 通过redis  redisTemplate.boundHashOps(SeckillConstant.SKU_CHACE_PREFIX) 映射到 hash结构，
+             * hash中， key为场次ID1_SkuId1 ,  value为秒杀商品信息（场次开始时间 结束时间、随机code、商品信息、场次ID）
+             * 把秒杀商品的库存数存入信号量中，key为 随机code。
+             */
             saveSessionSkuInfos(seckillSessionEntities);
 
         }
@@ -92,8 +100,9 @@ public class SeckillServiceImpl implements SeckillService {
     public List<SeckillSkuRedisDto> getCurrentSeckillSkus() {
         // 1.确定当前时间是属于哪个秒杀活动的
         long time = new Date().getTime();
-
-        try (Entry entry = SphU.entry("getCurrentSeckillSkusResources")) {
+        Entry entry = null;
+        try {
+            entry = SphU.entry("getCurrentSeckillSkusResources");
             // 被保护的业务逻辑
             // 从Redis中查询所有的秒杀活动
             Set<String> keys = redisTemplate.keys(SeckillConstant.SESSION_CHACE_PREFIX + "*");
@@ -123,6 +132,10 @@ public class SeckillServiceImpl implements SeckillService {
             // 资源访问阻止，被限流或被降级
             log.error("getCurrentSeckillSkusResources被限制访问了...");
             // 在此处进行相应的处理操作
+        }finally {
+            // 释放资源
+            assert entry != null;
+            entry.exit(1,null);
         }
         return null;
     }
@@ -154,10 +167,9 @@ public class SeckillServiceImpl implements SeckillService {
 
     /**
      * 实现秒杀逻辑
-     * @param killId
-     * @param code
-     * @param num
-     * @return
+     * 取出所有的hash， 根据场次ID_SkuId 取出对应的商品信息
+     * 判断时间是否在秒杀时间范围内、判断数量是否合法
+     * 加入分布式锁  开始库存扣减， 通过信号量校验下单数是否足够
      */
     @Override
     public String kill(String killId, String code, Integer num) {

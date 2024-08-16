@@ -9,6 +9,9 @@ import com.msb.mall.product.service.*;
 import com.msb.mall.product.vo.AttrGroupRelationVO;
 import com.msb.mall.product.vo.AttrResponseVo;
 import com.msb.mall.product.vo.AttrVO;
+import org.apache.skywalking.apm.toolkit.trace.Tag;
+import org.apache.skywalking.apm.toolkit.trace.Tags;
+import org.apache.skywalking.apm.toolkit.trace.Trace;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,6 +50,11 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
     CategoryService categoryService;
 
 
+    @Trace(operationName = "dongchanglong")
+    @Tags({
+            @Tag(key="attr",value = "returnedObj")
+            ,@Tag(key="attrParam",value = "arg[0]")
+    })
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<AttrEntity> page = this.page(
